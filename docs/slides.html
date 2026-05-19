@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>appteam — AI Agent Team Generator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css">
+  <style>
+    :root {
+      --r-background-color: #0d1117;
+      --r-main-color: #e6edf3;
+      --r-heading-color: #e6edf3;
+      --r-link-color: #39d0ba;
+      --r-link-color-hover: #5eebd3;
+      --r-selection-background-color: rgba(57, 208, 186, 0.3);
+      --r-selection-color: #e6edf3;
+      --accent: #39d0ba;
+      --text-secondary: #8b949e;
+      --border: #30363d;
+      --bg-secondary: #161b22;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', Menlo, Consolas, monospace;
+    }
+
+    .reveal {
+      font-family: var(--font-sans);
+      font-size: 32px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-transform: none;
+    }
+
+    .reveal h1 {
+      font-size: 2.8em;
+      color: var(--accent);
+    }
+
+    .reveal h2 {
+      font-size: 1.8em;
+      margin-bottom: 0.6em;
+    }
+
+    .reveal h3 {
+      font-size: 1.2em;
+      color: var(--accent);
+      margin-bottom: 0.4em;
+    }
+
+    .reveal p, .reveal li {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .reveal strong {
+      color: var(--r-main-color);
+      font-weight: 600;
+    }
+
+    .reveal .subtitle {
+      color: var(--text-secondary);
+      font-size: 0.7em;
+      font-weight: 400;
+      margin-top: 0.5em;
+    }
+
+    .reveal .author {
+      color: var(--accent);
+      font-size: 0.55em;
+      margin-top: 1.5em;
+      font-weight: 400;
+    }
+
+    .reveal ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .reveal ul li {
+      padding: 0.25em 0;
+      padding-left: 1.4em;
+      position: relative;
+      text-align: left;
+    }
+
+    .reveal ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.65em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.7;
+    }
+
+    .reveal code {
+      font-family: var(--font-mono);
+      background: var(--bg-secondary);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      border: 1px solid var(--border);
+    }
+
+    .reveal pre {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.8em 1em;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      margin: 0.5em auto;
+    }
+
+    .reveal pre code {
+      background: transparent;
+      border: none;
+      color: var(--r-main-color);
+      font-size: 0.7em;
+      line-height: 1.5;
+      padding: 0;
+    }
+
+    .reveal .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8em;
+      margin-top: 0.5em;
+      text-align: center;
+    }
+
+    .reveal .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.7em 0.5em;
+    }
+
+    .reveal .stat-number {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+      line-height: 1.2;
+    }
+
+    .reveal .stat-label {
+      font-size: 0.55em;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .reveal .pipeline-flow {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.2em;
+      margin: 0.8em 0;
+      font-size: 0.7em;
+    }
+
+    .reveal .pipeline-node {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4em 0.7em;
+      color: var(--r-main-color);
+      font-weight: 600;
+    }
+
+    .reveal .pipeline-node.highlight {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .reveal .pipeline-arrow {
+      color: var(--accent);
+      font-size: 1.2em;
+    }
+
+    .reveal .team-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0.4em 1em;
+      text-align: left;
+      font-size: 0.75em;
+      margin: 0.3em 0;
+      align-items: baseline;
+    }
+
+    .reveal .team-label {
+      color: var(--accent);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .reveal .team-desc {
+      color: var(--text-secondary);
+    }
+
+    .reveal .skill-group {
+      text-align: left;
+      margin: 0.3em 0;
+    }
+
+    .reveal .skill-group h3 {
+      font-size: 0.7em;
+      margin-bottom: 0.2em;
+    }
+
+    .reveal .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3em;
+    }
+
+    .reveal .skill-tag {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.15em 0.5em;
+      font-size: 0.55em;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .reveal .cta-link {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--r-background-color) !important;
+      padding: 0.4em 1.2em;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.65em;
+      margin-top: 0.8em;
+      text-decoration: none;
+    }
+
+    .reveal .cta-link:hover {
+      background: var(--r-link-color-hover);
+    }
+
+    .reveal .divider {
+      width: 60px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin: 0.5em auto;
+      opacity: 0.6;
+    }
+
+    .reveal .small {
+      font-size: 0.6em;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- Slide 1: Title -->
+      <section>
+        <h1>appteam</h1>
+        <p class="subtitle">Generate Opinionated AI Agent Teams<br>for Claude Code</p>
+        <p class="author">Ameer Abbas</p>
+        <aside class="notes">
+          appteam is a Go CLI tool that generates complete multi-agent team configurations for Claude Code projects. One command, eight questions, and you have a fully structured team ready to go.
+        </aside>
+      </section>
+
+      <!-- Slide 2: The Problem -->
+      <section>
+        <h2>The Problem</h2>
+        <div class="divider"></div>
+        <ul>
+          <li><strong>No standard team structure</strong> across projects</li>
+          <li><strong>Pipeline rules</strong> get lost or ignored</li>
+          <li><strong>Skills recreated</strong> for every project</li>
+          <li><strong>Agent roles are ad-hoc</strong> — unclear responsibilities</li>
+          <li><strong>Backlog tracking</strong> is optional when it should be mandatory</li>
+        </ul>
+        <aside class="notes">
+          Managing AI coding agents is chaotic without structure. Every project reinvents agent roles, workflow rules, and skill commands from scratch. This leads to inconsistency, missed steps, and lost context.
+        </aside>
+      </section>
+
+      <!-- Slide 3: The Solution -->
+      <section>
+        <h2>The Solution</h2>
+        <div class="divider"></div>
+        <pre><code>$ appteam</code></pre>
+        <ul>
+          <li><strong>Interactive wizard</strong> — complete team setup in seconds</li>
+          <li><strong>Opinionated structure</strong> that enforces best practices</li>
+          <li><strong>Consistent across projects</strong> — same roles, pipeline, conventions</li>
+        </ul>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <span class="stat-number">33+</span>
+            <span class="stat-label">Generated Files</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number">0</span>
+            <span class="stat-label">Dependencies</span>
+          </div>
+        </div>
+        <aside class="notes">
+          One command. Eight questions. A complete multi-agent team with roles, skills, workflows, and tracking. Pure Go, zero external dependencies. Works with any Claude Code project.
+        </aside>
+      </section>
+
+      <!-- Slide 4: What You Get -->
+      <section>
+        <h2>What You Get</h2>
+        <div class="divider"></div>
+        <ul>
+          <li><strong>CLAUDE.md</strong> — project instructions with pipeline rules</li>
+          <li><strong>8 agent roles</strong> — PM, TPM, SWE, Test, QA, Reviewer, Platform</li>
+          <li><strong>21 skills</strong> — slash commands for common workflows</li>
+          <li><strong>Project docs</strong> — backlog, progress, release notes, pipeline</li>
+          <li><strong>Settings persistence</strong> — regenerate anytime with <code>-r</code></li>
+        </ul>
+        <aside class="notes">
+          Everything a Claude Code project needs to run a structured multi-agent team. Agent definitions, skill commands, project documentation, and saved settings for future regeneration.
+        </aside>
+      </section>
+
+      <!-- Slide 5: Team Sizing -->
+      <section>
+        <h2>Team Sizing</h2>
+        <div class="divider"></div>
+        <div class="team-row">
+          <span class="team-label">Lean</span>
+          <span class="team-desc">PM + 1 SWE + SWE-Test — quick fixes, small projects</span>
+        </div>
+        <div class="team-row">
+          <span class="team-label">Standard</span>
+          <span class="team-desc">PM + TPM + 2 SWEs + SWE-Test + Reviewer — the default</span>
+        </div>
+        <div class="team-row">
+          <span class="team-label">Full</span>
+          <span class="team-desc">All agents, up to 5 SWEs — large milestones</span>
+        </div>
+        <p class="small" style="margin-top: 1.5em;">+ Custom agents: DBA, UX Designer, Tech Writer — define your own</p>
+        <aside class="notes">
+          Three team sizes to match your project's needs. Lean for solo work, Standard for most projects, Full for complex multi-stream work. Plus custom agent roles for anything else.
+        </aside>
+      </section>
+
+      <!-- Slide 6: The Pipeline -->
+      <section>
+        <h2>The Pipeline</h2>
+        <div class="divider"></div>
+        <div class="pipeline-flow">
+          <span class="pipeline-node highlight">PO</span>
+          <span class="pipeline-arrow">&rarr;</span>
+          <span class="pipeline-node">PM</span>
+          <span class="pipeline-arrow">&rarr;</span>
+          <span class="pipeline-node">TPM</span>
+          <span class="pipeline-arrow">&rarr;</span>
+          <span class="pipeline-node">SWE</span>
+          <span class="pipeline-arrow">&rarr;</span>
+          <span class="pipeline-node">Test</span>
+          <span class="pipeline-arrow">&rarr;</span>
+          <span class="pipeline-node">Review</span>
+          <span class="pipeline-arrow">&rarr;</span>
+          <span class="pipeline-node highlight">Release</span>
+        </div>
+        <ul>
+          <li><strong>Every feature</strong> gets a spec before coding starts</li>
+          <li><strong>Every piece of work</strong> tracked in the backlog</li>
+          <li><strong>Every milestone</strong> has release notes and a git tag</li>
+          <li><strong>No shortcuts</strong> — the pipeline is mandatory</li>
+        </ul>
+        <aside class="notes">
+          The pipeline is non-negotiable. Every piece of work follows this flow: PO provides feedback, PM writes a spec, TPM assigns work, SWEs implement, testing verifies, review checks quality, then release. Backlog and progress are updated at every step.
+        </aside>
+      </section>
+
+      <!-- Slide 7: Skills System -->
+      <section>
+        <h2>21 Skills</h2>
+        <div class="divider"></div>
+        <div class="skill-group">
+          <h3>PM Skills (7)</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">/spec</span>
+            <span class="skill-tag">/release</span>
+            <span class="skill-tag">/roadmap</span>
+            <span class="skill-tag">/status</span>
+            <span class="skill-tag">/pipeline</span>
+            <span class="skill-tag">/regenerate</span>
+            <span class="skill-tag">/brainstorm</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <h3>Dev Tier 1 (6) — included by default</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">/debug</span>
+            <span class="skill-tag">/test</span>
+            <span class="skill-tag">/review</span>
+            <span class="skill-tag">/docs</span>
+            <span class="skill-tag">/refactor</span>
+            <span class="skill-tag">/hotfix</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <h3>Dev Tier 2 (8) — opt-in</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">/api-design</span>
+            <span class="skill-tag">/schema</span>
+            <span class="skill-tag">/deploy</span>
+            <span class="skill-tag">/security</span>
+            <span class="skill-tag">/adr</span>
+            <span class="skill-tag">/standup</span>
+            <span class="skill-tag">/cuj-list</span>
+            <span class="skill-tag">/cuj-test</span>
+          </div>
+        </div>
+        <p class="small" style="margin-top: 0.8em;">+ Custom skills — define your own during the wizard</p>
+        <aside class="notes">
+          Skills are Claude Code slash commands. PM skills for project management workflows, Tier 1 dev skills for everyday development, and Tier 2 for specialized needs. Plus custom skills for anything project-specific.
+        </aside>
+      </section>
+
+      <!-- Slide 8: How It Works -->
+      <section>
+        <h2>How It Works</h2>
+        <div class="divider"></div>
+        <pre><code>$ go install github.com/ahafin/appteam@latest
+
+$ cd my-project
+$ appteam
+
+━━ Step 1 of 8 ━━ Project Basics
+▸ Project name: my-app
+▸ Description: A REST API for widgets
+▸ Tech stack: Go, PostgreSQL
+
+━━ Step 5 of 8 ━━ Agent Team
+▸ Team size (lean/standard/full): standard
+▸ Number of SWE agents (1-5): 2
+
+✓ Generated 33 files in ./
+✓ Settings saved to .appteam/settings.json</code></pre>
+        <p class="small" style="margin-top: 0.6em;">
+          Regenerate anytime: <code>appteam -r</code> &nbsp;|&nbsp; Target dir: <code>appteam -d ./project</code>
+        </p>
+        <aside class="notes">
+          Install with go install, run the wizard, answer 8 steps. Settings are saved for regeneration. Use -r to regenerate without the wizard, -d to target a different directory.
+        </aside>
+      </section>
+
+      <!-- Slide 9: Tech Stack -->
+      <section>
+        <h2>Tech Stack</h2>
+        <div class="divider"></div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <span class="stat-number">Go</span>
+            <span class="stat-label">stdlib only</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number">148</span>
+            <span class="stat-label">Tests</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number">33+</span>
+            <span class="stat-label">Generated Files</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number">21</span>
+            <span class="stat-label">Skills</span>
+          </div>
+        </div>
+        <ul style="margin-top: 0.8em;">
+          <li><code>text/template</code> for markdown generation</li>
+          <li><code>bufio</code> for interactive prompts</li>
+          <li>Works with <strong>any</strong> Claude Code project</li>
+        </ul>
+        <aside class="notes">
+          Zero external dependencies. Pure Go standard library. 148 tests across 5 packages with strong coverage. Generates 33+ files including agents, skills, docs, and settings.
+        </aside>
+      </section>
+
+      <!-- Slide 10: Roadmap -->
+      <section>
+        <h2>Roadmap</h2>
+        <div class="divider"></div>
+        <p><strong>14 releases</strong> shipped — v0.1.0 through v0.13.1</p>
+        <ul>
+          <li><strong>Next:</strong> Agent self-assessment / retrospective skill</li>
+          <li><strong>Next:</strong> Multi-project shared conventions</li>
+          <li><strong>Vision:</strong> Self-improving agent teams that learn from each milestone</li>
+        </ul>
+        <aside class="notes">
+          14 releases in rapid iteration. Next up: agents that review their own performance and improve their definitions over time, plus shared conventions across projects. The long-term vision is self-improving agent teams.
+        </aside>
+      </section>
+
+      <!-- Slide 11: Get Started -->
+      <section>
+        <h2>Get Started</h2>
+        <div class="divider"></div>
+        <pre><code>go install github.com/ahafin/appteam@latest</code></pre>
+        <p style="margin-top: 1em;">
+          <a href="https://github.com/ahafin/appteam" class="cta-link">GitHub</a>
+          &nbsp;&nbsp;
+          <a href="https://ahafin.github.io/appteam" class="cta-link">Docs</a>
+        </p>
+        <aside class="notes">
+          Try it now. Install with go install, run appteam in your project, and you'll have a complete agent team in seconds.
+        </aside>
+      </section>
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      transition: 'fade',
+      transitionSpeed: 'fast',
+      controlsTutorial: false,
+      progress: true,
+      center: true,
+      plugins: [RevealNotes]
+    });
+  </script>
+</body>
+</html>

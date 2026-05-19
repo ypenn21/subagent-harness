@@ -1,0 +1,53 @@
+{
+  "ProjectName": "appteam",
+  "Description": "CLI tool that generates Claude Code agent team configurations via interactive wizard",
+  "TechStack": "Go, text/template, bufio",
+  "InitGit": false,
+  "CreateRepo": false,
+  "RepoURL": "",
+  "GitHubOrg": "",
+  "OwnerName": "Ameer Abbas",
+  "OwnerEmail": "ameer00@gmail.com",
+  "OwnerGitHub": "ahafin",
+  "GCP": {
+    "Enabled": false,
+    "ProjectID": "",
+    "ProjectNumber": "",
+    "Organization": "",
+    "Region": ""
+  },
+  "SWEs": [
+    {
+      "Number": 1,
+      "Title": "CLI \u0026 Wizard",
+      "Bullets": [
+        "Interactive prompts and input validation",
+        "bufio.Scanner based user interaction",
+        "Command-line argument parsing"
+      ]
+    },
+    {
+      "Number": 2,
+      "Title": "Templates \u0026 Generation",
+      "Bullets": [
+        "text/template rendering for all output files",
+        "File generation orchestration",
+        "Template data structure design"
+      ]
+    }
+  ],
+  "IncludePlatform": false,
+  "IncludeReviewer": true,
+  "IncludeSWEQA": false,
+  "IncludeSWETest": true,
+  "Conventions": [
+    "Generated markdown must match swole reference structure and tone"
+  ],
+  "SelectedSkills": null,
+  "CustomSkills": null,
+  "CustomAgents": null,
+  "ModelName": "Opus 4.6",
+  "ModelID": "claude-opus-4-6",
+  "TargetDir": "/home/nixuser/Apps/appteam",
+  "TeamSize": "standard"
+}

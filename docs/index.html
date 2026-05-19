@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>appteam — AI Agent Team Generator</title>
+  <meta name="description" content="Generate Claude Code agent team configurations via interactive wizard">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #1c2128;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #656d76;
+      --accent: #39d0ba;
+      --accent-dim: #2ea38f;
+      --border: #30363d;
+      --code-bg: #161b22;
+      --sidebar-bg: #0d1117;
+      --sidebar-width: 260px;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--sidebar-bg) !important;
+      border-right: 1px solid var(--border) !important;
+      color: var(--text-secondary) !important;
+      padding-top: 1.5rem !important;
+    }
+
+    .sidebar .app-name-link {
+      color: var(--accent) !important;
+      font-weight: 700 !important;
+      font-size: 1.25rem !important;
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar ul li a {
+      color: var(--text-secondary) !important;
+      font-size: 0.9rem !important;
+      padding: 6px 16px !important;
+      border-radius: 6px !important;
+      margin: 1px 8px !important;
+      transition: all 0.15s ease !important;
+      display: block !important;
+    }
+
+    .sidebar ul li a:hover {
+      color: var(--text-primary) !important;
+      background: var(--bg-secondary) !important;
+    }
+
+    .sidebar ul li.active > a {
+      color: var(--accent) !important;
+      background: rgba(57, 208, 186, 0.08) !important;
+      font-weight: 600 !important;
+    }
+
+    .sidebar ul li strong {
+      color: var(--text-muted) !important;
+      font-size: 0.75rem !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.08em !important;
+      padding: 12px 16px 4px !important;
+      display: block !important;
+      margin: 0 8px !important;
+    }
+
+    .sidebar hr {
+      border: none !important;
+      border-top: 1px solid var(--border) !important;
+      margin: 12px 20px !important;
+    }
+
+    /* Main content */
+    .markdown-section {
+      max-width: 800px !important;
+      color: var(--text-primary) !important;
+    }
+
+    .markdown-section h1 {
+      color: var(--text-primary) !important;
+      font-weight: 700 !important;
+      font-size: 2rem !important;
+      border-bottom: 1px solid var(--border) !important;
+      padding-bottom: 0.5rem !important;
+      margin-top: 2rem !important;
+    }
+
+    .markdown-section h2 {
+      color: var(--text-primary) !important;
+      font-weight: 600 !important;
+      font-size: 1.5rem !important;
+      border-bottom: 1px solid var(--border) !important;
+      padding-bottom: 0.4rem !important;
+      margin-top: 2rem !important;
+    }
+
+    .markdown-section h3 {
+      color: var(--text-primary) !important;
+      font-weight: 600 !important;
+      font-size: 1.2rem !important;
+    }
+
+    .markdown-section p,
+    .markdown-section li {
+      color: var(--text-secondary) !important;
+      line-height: 1.7 !important;
+    }
+
+    .markdown-section a {
+      color: var(--accent) !important;
+      text-decoration: none !important;
+      border-bottom: 1px solid transparent !important;
+      transition: border-color 0.15s ease !important;
+    }
+
+    .markdown-section a:hover {
+      border-bottom-color: var(--accent) !important;
+    }
+
+    .markdown-section strong {
+      color: var(--text-primary) !important;
+      font-weight: 600 !important;
+    }
+
+    .markdown-section em {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Code */
+    .markdown-section code {
+      background: var(--code-bg) !important;
+      color: var(--accent) !important;
+      padding: 2px 6px !important;
+      border-radius: 4px !important;
+      font-family: var(--font-mono) !important;
+      font-size: 0.85em !important;
+      border: 1px solid var(--border) !important;
+    }
+
+    .markdown-section pre {
+      background: var(--code-bg) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      padding: 1rem 1.25rem !important;
+      line-height: 1.6 !important;
+    }
+
+    .markdown-section pre code {
+      background: transparent !important;
+      border: none !important;
+      color: var(--text-primary) !important;
+      padding: 0 !important;
+      font-size: 0.85rem !important;
+    }
+
+    /* Tables */
+    .markdown-section table {
+      border-collapse: collapse !important;
+      width: 100% !important;
+      margin: 1rem 0 !important;
+    }
+
+    .markdown-section th {
+      background: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      font-weight: 600 !important;
+      text-align: left !important;
+      padding: 10px 14px !important;
+      border: 1px solid var(--border) !important;
+      font-size: 0.85rem !important;
+    }
+
+    .markdown-section td {
+      padding: 8px 14px !important;
+      border: 1px solid var(--border) !important;
+      color: var(--text-secondary) !important;
+      font-size: 0.85rem !important;
+    }
+
+    .markdown-section tr:nth-child(even) {
+      background: rgba(22, 27, 34, 0.5) !important;
+    }
+
+    /* Blockquotes */
+    .markdown-section blockquote {
+      border-left: 3px solid var(--accent) !important;
+      background: var(--bg-secondary) !important;
+      padding: 12px 20px !important;
+      border-radius: 0 8px 8px 0 !important;
+      margin: 1rem 0 !important;
+      color: var(--text-secondary) !important;
+    }
+
+    /* Lists */
+    .markdown-section ul,
+    .markdown-section ol {
+      padding-left: 1.5rem !important;
+    }
+
+    .markdown-section li {
+      margin: 4px 0 !important;
+    }
+
+    /* Horizontal rules */
+    .markdown-section hr {
+      border: none !important;
+      border-top: 1px solid var(--border) !important;
+      margin: 2rem 0 !important;
+    }
+
+    /* Search */
+    .search {
+      border-bottom: 1px solid var(--border) !important;
+    }
+
+    .search input {
+      background: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 6px !important;
+      padding: 8px 12px !important;
+      font-size: 0.9rem !important;
+      width: calc(100% - 32px) !important;
+      margin: 8px 16px !important;
+    }
+
+    .search input:focus {
+      border-color: var(--accent) !important;
+      outline: none !important;
+      box-shadow: 0 0 0 2px rgba(57, 208, 186, 0.15) !important;
+    }
+
+    .search input::placeholder {
+      color: var(--text-muted) !important;
+    }
+
+    .search .matching-post {
+      border-bottom: 1px solid var(--border) !important;
+    }
+
+    .search a {
+      color: var(--accent) !important;
+    }
+
+    .search p {
+      color: var(--text-secondary) !important;
+    }
+
+    /* GitHub corner */
+    .github-corner svg {
+      fill: var(--accent) !important;
+      color: var(--bg-primary) !important;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Content area background */
+    .content {
+      background: var(--bg-primary) !important;
+    }
+
+    section.cover {
+      background: var(--bg-primary) !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Loading...</div>
+  <script>
+    window.$docsify = {
+      name: 'appteam',
+      repo: 'https://github.com/ahafin/appteam',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      homepage: 'home.md',
+      auto2top: true,
+      search: {
+        placeholder: 'Search docs...',
+        noData: 'No results',
+        depth: 3
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+</body>
+</html>

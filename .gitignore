@@ -1,0 +1,5 @@
+appteam
+*.exe
+*-sa-key.json
+.env
+coverage.out
