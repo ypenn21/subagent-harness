@@ -1,14 +1,4 @@
-# Prerequisite: Go
-appteam is written in Go and requires a Go toolchain to build or install. Minimum supported version: Go 1.20. We recommend using the latest stable Go release when possible.
-
-Install Go using your platform's package manager or the official binaries:
-
-macOS (Homebrew):
-```
-brew install go
-go version
-```
-# appteam
+# Use Case
 
 CLI tool that generates Claude Code agent team configurations via an interactive wizard. Zero external dependencies — stdlib only.
 
