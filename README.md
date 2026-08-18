@@ -1,8 +1,6 @@
-# Use Case
+## Use Case
 
 CLI tool that generates Claude Code agent team configurations via an interactive wizard. Zero external dependencies — stdlib only.
-
-## What It Does
 
 `appteam` scaffolds a complete multi-agent team setup for Claude Code projects. Run the wizard, answer a few questions, and it generates all the files you need: project instructions (`CLAUDE.md`), [...]
 
